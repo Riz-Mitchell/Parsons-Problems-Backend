@@ -5,18 +5,10 @@ const jwt = require('jsonwebtoken');
 
 exports.createParsonProblem = async (req, res) => {
     
-    // check if user logged in
-    const cookies = req.cookies;
-    if (cookies?.access_token) {
-
-        const accessToken = cookies.access_token;
-
-        console.log(accessToken);
-
-        
-    }
-    if (req.cookies) {
-        console.log(req.cookies);
+    if (req.login) {
+        console.log(`Created parsonsproblem under: ${req.sub}`);
+    } else {
+        console.log(`Created parsonsproblem under: ${req.ip}`);
     }
 
     // If logged in add the pp to their user
@@ -57,10 +49,16 @@ exports.createParsonProblem = async (req, res) => {
     ).status(200);
 };
 
-exports.getFeedback = async (req, res) => {
+exports.submitSolution = async (req, res) => {
     const parsonProblemId = req.params.id;
+    const userCode = req.body;
+
     try {
         const parsonProblem = await ParsonProblem.findById(parsonProblemId);
+
+        if (!problem) {
+            return res.status(404).send('Problem not found');
+        }
 
         const solution = parsonProblem.solution;
 

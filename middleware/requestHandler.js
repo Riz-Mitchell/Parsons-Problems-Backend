@@ -3,17 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 
-/*
-
-
-
-
-NEEEEED TOOOOOOO FIIXXX THE ISSUE WITH LOGOUTS, LOGGING OUT MUST REMOVE
-ALL TOKENS AND ACCESS TOKENS CANNOT AND SHOULD NOT GRANT NEW ACCESS TOKENS
-
-
-
-*/
 module.exports = async (req, res, next) => {
     
     // Check for Request cookies
