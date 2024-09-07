@@ -2,9 +2,14 @@ const User = require('../models/user');
 const bcrypt = require('bcrypt');
 
 exports.getUser = async (req, res) => {
-    const { userName, role, description, stats } = await User.findById(req.sub);
+    if (req.login) {
+        const { userName, role, description, stats } = await User.findById(req.sub);
 
-    const pubUserInfo = { userName, role, description, stats };
+        const pubUserInfo = { userName, role, description, stats };
+        return res.status(200).send(pubUserInfo);
+    } else {
+        return sendStatus(403); // Not logged in so obv cant get info
+    }
 
     res.send(pubUserInfo);
 }
