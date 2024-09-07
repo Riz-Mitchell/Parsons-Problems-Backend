@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
         if (passwordMatches) {
             const accessToken = jwt.sign(
                 {
-                    "sub": user._id,
+                    "sub": String(user._id),
                     "role": user.role
                 },
                 config.access_token_secret,
@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
 
             const refreshToken = jwt.sign(
                 {
-                    "sub": user._id,
+                    "sub": String(user._id),
                     "role": user.role
                 },
                 config.refresh_token_secret,
