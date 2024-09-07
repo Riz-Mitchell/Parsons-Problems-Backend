@@ -3,14 +3,12 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const config = require('./config/config');
 const authRoutes = require('./routes/authRoutes');
-const refreshRoutes = require('./routes/refreshRoutes');
 const userRoutes = require('./routes/userRoutes');
 // const APIRoutes = require('./routes/APIRoutes');
 const testRoutes = require('./routes/testRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const parsonsProblemsRoutes = require('./routes/parsonsProblemsRoutes.js');
 const cookieParser = require('cookie-parser');
-const verifyJWT = require('./middleware/verifyJWT');
 
 
 const requestHandler = require('./middleware/requestHandler');
@@ -28,11 +26,10 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
-app.use('/api/refresh', refreshRoutes);
 app.use('/api/test', requestHandler, testRoutes);
 
 app.use('/api/users', requestHandler, userRoutes);
-app.use('/api/parsonProblem', parsonsProblemsRoutes);
+app.use('/api/parsonProblem', requestHandler, parsonsProblemsRoutes);
 // app.use('/api/ai', APIRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
