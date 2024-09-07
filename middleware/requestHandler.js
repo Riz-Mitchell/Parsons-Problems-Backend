@@ -17,7 +17,7 @@ ALL TOKENS AND ACCESS TOKENS CANNOT AND SHOULD NOT GRANT NEW ACCESS TOKENS
 module.exports = async (req, res, next) => {
     
     // Check for Request cookies
-    if (req.cookies) {
+    if (req.cookies && Object.keys(req.cookies).length > 0) {
 
         // Extract cookies
         const { access_token: accessToken, refresh_token: refreshToken } = req.cookies;
@@ -29,7 +29,6 @@ module.exports = async (req, res, next) => {
                 config.access_token_secret
             );
             
-
             // If token is valid attach req variables
             attachRequestVariables(true, req, decoded.sub, decoded.role);
             next();
@@ -51,7 +50,7 @@ module.exports = async (req, res, next) => {
             // Create new access token
             const newAccessToken = jwt.sign(
                 {
-                    "sub": user._id,
+                    "sub": String(user._id),
                     "role": user.role
                 },
                 config.access_token_secret,
@@ -68,7 +67,7 @@ module.exports = async (req, res, next) => {
                 }
             );
             // Attach req variables
-            attachRequestVariables(true, req, user._id, user.role);
+            attachRequestVariables(true, req, String(user._id), user.role);
             next();
         } 
     } else {
