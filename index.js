@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const config = require('./config/config');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-// const APIRoutes = require('./routes/APIRoutes');
+const APIRoutes = require('./helpers/geminiInterface.js');
 const testRoutes = require('./routes/testRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const parsonsProblemsRoutes = require('./routes/parsonsProblemsRoutes.js');
@@ -30,8 +30,6 @@ app.use('/api/test', requestHandler, testRoutes);
 
 app.use('/api/users', requestHandler, userRoutes);
 app.use('/api/parsonProblem', requestHandler, parsonsProblemsRoutes);
-// app.use('/api/ai', APIRoutes);
-app.use('/api/feedback', feedbackRoutes);
 
 
 mongoose.connect(config.db.uri, config.db.options)
