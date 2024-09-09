@@ -46,6 +46,8 @@ router.post('/generate', async (req, res) => {
         const response = await result.response;
         const text = response.text();
 
+        console.log(text);
+
         const generatedCode = text.trim();
 
         // Process the code (split it into lines for Parsons Problem)
