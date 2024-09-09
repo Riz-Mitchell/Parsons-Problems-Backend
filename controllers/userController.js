@@ -43,16 +43,4 @@ exports.deleteUser = async (req, res) => {
         return res.status(500).send(`Internal Server Error: "${error}"`);
         
     }
-
 }
-/**
- * 
- * @param {Express.Request} req 
- */
-/*
-const verifyUser = (req) => {
-    const paramId = req.params.id;
-    const reqId = req.id;
-
-    console.log(`paramId = ${paramId}\nreqId = ${reqId}`);
-}*/
