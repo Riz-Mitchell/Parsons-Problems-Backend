@@ -57,7 +57,7 @@ exports.generateProblemViaGemini = async (topic, theme) => {
     // const doNotIncludeSpecials = 'Additionally, in the strings of the "codeBlocks" array, do not include formatting such as unecessary whitespaces preceeding bits of code and new line characters'
 
     // Construct the prompt based on the selected topic
-    const prompt = `Create a Parson's problem around the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to perform a task related to this theme in using the python blocks. Provide the correct code, split into blocks, ensuring the code logically aligns with the task. Format the response as a JSON object with two properties: "prompt": a string containing the question to be solved. "codeBlocks": an array of strings, where each string is a line of the correct code. Ensure the code blocks are ordered to solve the problem correctly and fit the theme. To be clear, the "codeBlocks" array strings should contain no newline characters at all.`;
+    const aiQuestion = `Create a Parson's problem around the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to perform a task related to this theme in using the python blocks. Provide the correct code, split into blocks, ensuring the code logically aligns with the task. Format the response as a JSON object with two properties: "prompt": a string containing the question to be solved. "codeBlocks": an array of strings, where each string is a line of the correct code. Ensure the code blocks are ordered to solve the problem correctly and fit the theme. To be clear, the "codeBlocks" array strings should contain no newline characters at all.`;
 
     try {
 
@@ -65,7 +65,7 @@ exports.generateProblemViaGemini = async (topic, theme) => {
         const model = genAI.getGenerativeModel({ model: "gemini-pro"});
 
         // extract the response from gemini
-        const result = await model.generateContent(prompt);
+        const result = await model.generateContent(aiQuestion);
         const geminiResponse = await result.response;
 
         // Basic formatting and removing code markers so the string (response.text) can be converted to JSON
