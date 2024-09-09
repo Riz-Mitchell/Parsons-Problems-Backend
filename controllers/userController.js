@@ -5,6 +5,8 @@ exports.getUser = async (req, res) => {
     if (req.login) {
         const { userName, role, description, stats } = await User.findById(req.sub);
 
+        console.log(req.cookies);
+
         const pubUserInfo = { userName, role, description, stats };
         return res.status(200).send(pubUserInfo);
     } else {
