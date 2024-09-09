@@ -1,52 +1,38 @@
 const ParsonProblem = require('../models/parsonProblem');
-const config = require('../config/config');
-const { JsonWebTokenError } = require('jsonwebtoken');
-const jwt = require('jsonwebtoken');
+const geminiInterface = require('../helpers/geminiInterface');
 
 exports.createParsonProblem = async (req, res) => {
-    
-    if (req.login) {
-        console.log(`Created parsonsproblem under: ${req.sub}`);
-    } else {
-        console.log(`Created parsonsproblem under: ${req.ip}`);
+
+    try {
+        
+        // Extract information to create the PP :)))))
+        const { topic, theme } = req.body;
+
+
+        const { prompt, correctBlocks, scrambledBlocks } = await geminiInterface.generateProblemViaGemini(topic, theme); 
+
+        // Save the problem in MongoDB
+        const parsonProblem = new ParsonProblem({
+            prompt: prompt,
+            topic: topic,
+            theme: theme,
+            correctBlocks: correctBlocks,
+            scrambledBlocks: scrambledBlocks,
+            ipAddress: req.ip
+        });
+
+        await parsonProblem.save();
+
+        // Respond with the scrambled code to the frontend
+        res.status(200).send({
+            problemId: parsonProblem._id,
+            prompt: parsonProblem.prompt,
+            scrambledBlocks: parsonProblem.scrambledBlocks
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    // If logged in add the pp to their user
-
-    // Request new parson problem with ai model
-    const sampleProblem = {
-        ipAddress: req.ip,
-        prompt: "Machine learning with regards to ducks",
-        description: "Console log blah blah rah rah",
-        blocks: ['line 2 code by gemini', 'line1 code by gemini'],
-        solution: ['line1 code by gemini', 'line 2 code by gemini']
-    };
-
-
-    const newProblem = new ParsonProblem(
-        {
-            ipAddress: sampleProblem.ipAddress,
-            prompt: sampleProblem.prompt,
-            description: sampleProblem.description,
-            blocks: sampleProblem.blocks,
-            solution: sampleProblem.solution
-
-        }
-    );
-
-    await newProblem.save();
-
-
-    // if logged out just return the pp
-    res.send(
-        {
-            data: {
-                description: newProblem.description,
-                blocks: newProblem.blocks,
-                parsonProblemId: newProblem._id
-            }
-        }
-    ).status(200);
 };
 
 exports.submitSolution = async (req, res) => {
