@@ -36,7 +36,8 @@ exports.generateProblemViaGemini = async (topic, theme) => {
             aiQueryTopic += "Normalized Mutual Information (NMI) using scikit-learn";
             break;
         case 'Sentence Splitting':
-            aiQueryTopic += "Sentence splitting using nltk.sent_tokenize().";
+            // aiQueryTopic += "Sentence splitting using nltk.sent_tokenize().";
+            aiQueryTopic += "Sentence splitting";
             break;
         case 'Correlation':
             aiQueryTopic += "Correlations using Pandas.";
