@@ -30,6 +30,7 @@ app.use('/api/test', requestHandler, testRoutes);
 
 app.use('/api/users', requestHandler, userRoutes);
 app.use('/api/parsonProblem', requestHandler, parsonsProblemsRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 
 mongoose.connect(config.db.uri, config.db.options)
