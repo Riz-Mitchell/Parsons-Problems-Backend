@@ -1,5 +1,6 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const config = require('../config/config');
+const fs = require('fs');
 
 
 const genAI = new GoogleGenerativeAI(config.ai_api_key);
@@ -58,7 +59,14 @@ exports.generateProblemViaGemini = async (topic, theme) => {
     // const doNotIncludeSpecials = 'Additionally, in the strings of the "codeBlocks" array, do not include formatting such as unecessary whitespaces preceeding bits of code and new line characters'
 
     // Construct the prompt based on the selected topic
-    const aiQuestion = `Create a Parson's problem around the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to perform a task related to this theme in using the python blocks. Provide the correct code, split into blocks, ensuring the code logically aligns with the task. Format the response as a JSON object with two properties: "prompt": a string containing the question to be solved. "codeBlocks": an array of strings, where each string is a line of the correct code. Ensure the code blocks are ordered to solve the problem correctly and fit the theme. To be clear, the "codeBlocks" array strings should contain no newline characters at all.`;
+    const aiQuestion = `Create a Parson's problem based on the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to complete a task related to this theme using Python code blocks.
+
+    Provide the correct code, split into blocks, ensuring that the code logically aligns with the task. Format the response as a JSON object with two properties:
+
+    prompt: a string containing the task to be solved.
+    codeBlocks: an array of strings, where each string is a line of the correct code, ordered to solve the problem. Each string in the codeBlocks array should contain no newline characters.
+    
+    Ensure that all dictionaries in the code are on a single line. Do not include any references to Parson's problems in the prompt field.`;
 
     try {
 
@@ -67,10 +75,23 @@ exports.generateProblemViaGemini = async (topic, theme) => {
 
         // extract the response from gemini
         const result = await model.generateContent(aiQuestion);
-        const geminiResponse = await result.response;
+        const geminiResponse = result?.response?.text();
+
+        if (!geminiResponse) {
+            throw new Error("No response received from the Gemini model");
+        }
+        
+        console.log(`The response:\n\n\n\n\n${geminiResponse}\n\n\nHas a type of ${typeof(geminiResponse)}`)
+        fs.writeFile('./output.txt', geminiResponse, (err) => {
+            if (err) {
+                throw err;
+            } else {
+                console.log('File saved at ./output.txt');
+            }
+        });
 
         // Basic formatting and removing code markers so the string (response.text) can be converted to JSON
-        const problemJSON = JSON.parse(geminiResponse.text().replace(/```json|```|\*/g, ''));
+        const problemJSON = cleanJSON(geminiResponse);
 
         // Return the question prompt, scrambled blocks and solution
         return { 
@@ -79,8 +100,41 @@ exports.generateProblemViaGemini = async (topic, theme) => {
             scrambledBlocks: [...problemJSON['codeBlocks']].sort(() => Math.random() - 0.5)
         }
     } catch (error) {
-
         // Pass error to createParsonProblem top level function
         throw error;
     }
+};
+
+
+
+/**
+ * Cleans and preprocesses a given JSON string.
+ * 
+ * This function accepts a JSON string, performs cleaning and preprocessing steps, 
+ * and returns a cleaned JSON string. The specific cleaning and preprocessing 
+ * steps depend on the implementation details, which are not provided in this 
+ * function's current form.
+ * 
+ * @param {string} jsonString - The JSON string to be cleaned and preprocessed.
+ * @returns {string} - The cleaned and preprocessed JSON string.
+ * @throws {Error} - Throws an error if the the json cannot be reconciled / formatted correctly
+ * 
+ */
+const cleanJSON = (jsonString) => {
+    const initJSON = JSON.parse(jsonString.replace(/```json|```|\*/g, ''));
+
+
+    // This code block was created with chatGPT for preprocessing some of the data:
+    // Start block
+    initJSON['codeBlocks'] = initJSON['codeBlocks']
+    .map(line => {
+        if (typeof line !== 'string') {
+            throw new Error(`Expected a string, but received ${typeof line}`);
+        }
+        return line.trim(); // Trim leading and trailing whitespace
+    })
+    .filter(line => line !== '' && !line.startsWith('#')); // Remove empty lines and lines starting with '#'
+    // End Block
+
+    return initJSON;
 };

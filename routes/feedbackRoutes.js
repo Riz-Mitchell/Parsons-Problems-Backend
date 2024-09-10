@@ -16,7 +16,6 @@ router.route('/submit/:id').post(async (req, res) => {
 
         // Combine correct code lines into a single string
         const correctCodeString = problem.correctBlocks.map(line => line.replace(/"/g, '\\"')).join('; ');
-
         // Execute the correct code to determine the expected output
         exec(`python -c "${correctCodeString}"`, (error, correctStdout, correctStderr) => {
             if (error) {
