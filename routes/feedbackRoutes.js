@@ -15,12 +15,12 @@ router.route('/submit/:id').post(async (req, res) => {
         }
 
         // Combine correct code lines into a single string
-        const correctCodeString = problem.correct_code.join('\n');
+        const correctCodeString = problem.correctBlocks.join('\n');
 
         // Execute the correct code to determine the expected output
         exec(`python -c "${correctCodeString}"`, (error, correctStdout, correctStderr) => {
             if (error) {
-                return res.status(500).json({ error: 'Failed to generate correct output' });
+                return res.status(500).json({ error: 'Failed to generate correct output', details: correctStderr });
             }
 
             // Combine user's code lines into a single string
