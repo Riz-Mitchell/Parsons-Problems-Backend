@@ -15,30 +15,37 @@ router.route('/submit/:id').post(async (req, res) => {
         }
 
         // Combine correct code lines into a single string
-        const correctCodeString = problem.correctBlocks.join('\n');
-
+        const correctCodeString = problem.correctBlocks.map(line => line.replace(/"/g, '\\"')).join('; ');
         // Execute the correct code to determine the expected output
         exec(`python -c "${correctCodeString}"`, (error, correctStdout, correctStderr) => {
             if (error) {
+                console.error('Error executing correct code:', correctStderr);
                 return res.status(500).json({ error: 'Failed to generate correct output', details: correctStderr });
             }
+        
+            // Log stderr to see if there's an issue
+            if (correctStderr) {
+                console.error('Python stderr:', correctStderr);
+            }
+            console.log('CorrectString:', correctCodeString);
+            console.log('Python stdout:', correctStdout);
 
             // Combine user's code lines into a single string
-            const userCodeString = userCode.join('\n');
-            // const userCodeString = userCode;
+            const userCodeString = userCode.map(line => line.replace(/"/g, '\\"')).join('; ');
 
             // Execute the user's code
             exec(`python -c "${userCodeString}"`, (userError, userStdout, userStderr) => {
+                console.log('UserString:', userCodeString);
                 let feedback = '';
                 if (userError) {
                     // If there's an error, return it as feedback
-                    feedback = userStderr;
-                }
-                else {
+                    feedback = userStderr; // like runtime or exception error
+                } else {
                     if (userStdout.trim() === correctStdout.trim()) {
-                        feedback = userStdout + 'Correct! Your code produced the expected output.';
+                        // feedback = userStdout + 'Correct! Your code produced the expected output.';
+                        feedback = 'Correct! Your code produced the expected output.\r\nYour output: ' + userStdout;
                     } else {
-                        feedback = userStderr;
+                        feedback = 'Your output does not match the correct output\r\nYour output: ' + userStdout + "Correct output: " + correctStdout;
                     }
                 }
 
