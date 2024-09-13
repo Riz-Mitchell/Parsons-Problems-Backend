@@ -19,16 +19,9 @@ router.route('/submit/:id').post(async (req, res) => {
         // Execute the correct code to determine the expected output
         exec(`python -c "${correctCodeString}"`, (error, correctStdout, correctStderr) => {
             if (error) {
-                console.error('Error executing correct code:', correctStderr);
+                // console.error('Error executing correct code:', correctStderr);
                 return res.status(500).json({ error: 'Failed to generate correct output', details: correctStderr });
             }
-        
-            // Log stderr to see if there's an issue
-            if (correctStderr) {
-                console.error('Python stderr:', correctStderr);
-            }
-            console.log('CorrectString:', correctCodeString);
-            console.log('Python stdout:', correctStdout);
 
             // Combine user's code lines into a single string
             const userCodeString = userCode.map(line => line.replace(/"/g, '\\"')).join('; ');
@@ -41,11 +34,11 @@ router.route('/submit/:id').post(async (req, res) => {
                     // If there's an error, return it as feedback
                     feedback = userStderr; // like runtime or exception error
                 } else {
-                    if (userStdout.trim() === correctStdout.trim()) {
+                    if (userStdout == correctStdout) {
                         // feedback = userStdout + 'Correct! Your code produced the expected output.';
-                        feedback = 'Correct! Your code produced the expected output.\r\nYour output: ' + userStdout;
+                        feedback = 'Correct! Your code produced the expected output.\r\nOutput: ' + userStdout;
                     } else {
-                        feedback = 'Your output does not match the correct output\r\nYour output: ' + userStdout + "Correct output: " + correctStdout;
+                        feedback = 'Your output does not match the correct output.\r\nYour output: ' + userStdout + "\r\nCorrect output: " + correctStdout;
                     }
                 }
 
