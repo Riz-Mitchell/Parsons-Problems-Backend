@@ -38,7 +38,6 @@ exports.generateProblemViaGemini = async (topic, theme) => {
             break;
         case 'Sentence Splitting':
             aiQueryTopic += "Sentence splitting using nltk.sent_tokenize()";
-            // aiQueryTopic += "Sentence splitting";
             break;
         case 'Correlation':
             aiQueryTopic += "Correlations using Pandas";
@@ -49,9 +48,9 @@ exports.generateProblemViaGemini = async (topic, theme) => {
         case 'Decision Tree Classifier':
             aiQueryTopic += "Decision tree classifiers using Scikit-learn";
             break;
-        case 'CSV':
-            aiQueryTopic += "CSV files using pandas";
-            break;
+        // case 'CSV':
+        //     aiQueryTopic += "CSV files using pandas";
+        //     break;
         default:
             throw new Error('Please select a prexisting topic');
     }
@@ -59,7 +58,7 @@ exports.generateProblemViaGemini = async (topic, theme) => {
     // const doNotIncludeSpecials = 'Additionally, in the strings of the "codeBlocks" array, do not include formatting such as unecessary whitespaces preceeding bits of code and new line characters'
 
     // Construct the prompt based on the selected topic
-    const aiQuestion = `Create a Parson's problem based on the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to complete a task related to this theme using Python code blocks.
+    const aiQuestion = `Create a difficult Parson's problem based on the theme of ${theme} and the topic of ${aiQueryTopic}. The problem should ask the user to complete a task related to this theme using Python code blocks.
 
     Provide the correct code, split into blocks, ensuring that the code logically aligns with the task. Format the response as a JSON object with two properties:
 
