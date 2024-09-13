@@ -82,14 +82,15 @@ exports.generateProblemViaGemini = async (topic, theme) => {
             throw new Error("No response received from the Gemini model");
         }
         
+        // Testing
         // console.log(`The response:\n\n${geminiResponse}\n\n`)
-        fs.writeFile('./output.txt', geminiResponse, (err) => {
+        /*fs.writeFile('./output.txt', geminiResponse, (err) => {
             if (err) {
                 throw err;
             } else {
                 // console.log('File saved at ./output.txt');
             }
-        });
+        });*/
 
         // Basic formatting and removing code markers so the string (response.text) can be converted to JSON
         const problemJSON = cleanJSON(geminiResponse);
