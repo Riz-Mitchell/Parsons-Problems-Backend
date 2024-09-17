@@ -76,7 +76,42 @@ exports.submitSolution = async (req, res) => {
             return res.status(404).send({ error: 'Problem not found' });
         }
 
+
         const result = await handleTempFile(joinCodeLines(codeBlocks));
+
+        // Correct
+        if (result.passed) {
+            const updatedUser = await User.findByIdAndUpdate(
+                req.sub,
+                { 
+                    $inc: 
+                    { 
+                        'stats.totalProblems': 1,
+                        'stats.correctProblems': 1
+                        // Add time taken to total time spent
+                    }
+                }, // Increment total problems by one
+                {
+                    new: true,
+                    runValidators: true
+                }
+            );
+        } else {
+            const updatedUser = await User.findByIdAndUpdate(
+                req.sub,
+                { 
+                    $inc: 
+                    { 
+                        'stats.totalProblems': 1,
+                        // Add time taken to total time spent
+                    }
+                }, // Increment total problems by one
+                {
+                    new: true,
+                    runValidators: true
+                }
+            );
+        }
 
         return res.status(200).send(result);
 
@@ -84,55 +119,4 @@ exports.submitSolution = async (req, res) => {
         console.log(`parent`);
         return res.status(500).send(`Internal Server Error: ${error}`);
     }
-
-
-
-    /*
-    CBS Dealing with this right now
-
-    We'll come back to it later
-
-    ----------------------------------
-    Extra Validation / Python Response
-    ----------------------------------
-
-
-    */
-    /*if (!Array.isArray(userCode) || userCode.length === 0) {
-        return res.status(400).json({ error: 'Invalid user code input' });
-    }
-
-    try {
-        const problem = await ParsonProblem.findById(req.params.id);
-        if (!problem) {
-            return res.status(404).json({ error: 'Problem not found' });
-        }
-
-        let feedback = `Correct output!`;
-
-        if (userCode === problem.correctBlocks) {
-            return res.status(200).send(
-                {
-                    passed: true,
-                    feedback: `Correct output!`
-                }
-            )
-        } else {
-            feedback = await managePythonExecution(problem, userCode);
-        }
-
-        problem.feedback = feedback;
-        await problem.save();
-
-        return res.status(200).send(
-            {
-                passed: false,
-                feedback: feedback
-            }
-        );
-
-    } catch (error) {
-        console.error('Error during solution submission:', error);
-        return res.status(500).json({ error: 'Internal server error', details: error.message });
-    }*/
 };
