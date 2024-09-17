@@ -1,8 +1,9 @@
 const ParsonProblem = require('../models/parsonProblem');
 const User = require('../models/user');
 const geminiInterface = require('../Interfaces/geminiInterface');
-const { managePythonExecution } = require('../Interfaces/pythonInterface');
+const handleTempFile = require('../Interfaces/pythonInterface');
 const { login } = require('./authController');
+const { joinCodeLines } = require('../helpers/helpers')
 
 exports.createParsonProblem = async (req, res) => {
     try {
@@ -75,24 +76,12 @@ exports.submitSolution = async (req, res) => {
             return res.status(404).send({ error: 'Problem not found' });
         }
 
-        if (JSON.stringify(codeBlocks) === JSON.stringify(problem.correctBlocks)) {
-            
-            return res.status(200).send(
-                {
-                    passed: true,
-                    feedback: `Correct output!`
-                }
-            )
-        } else {
-            return res.status(200).send(
-                {
-                    passed: false,
-                    feedback: `Compilation Error!`
-                }
-            )
-        }
+        const result = await handleTempFile(joinCodeLines(codeBlocks));
+
+        return res.status(200).send(result);
 
     } catch (error) {
+        console.log(`parent`);
         return res.status(500).send(`Internal Server Error: ${error}`);
     }
 
