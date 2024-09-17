@@ -26,7 +26,7 @@ const cleanTerminalMessage = (messages) => {
 
             // Format and prepend line and char to the cleaned message
             const formattedMessage = line && char 
-                ? `Line ${line}, Char ${char}: ${cleanedMessage.trim()}`
+                ? `Line ${line}: ${cleanedMessage.trim()}`
                 : cleanedMessage.trim();
 
             // Return the formatted message
