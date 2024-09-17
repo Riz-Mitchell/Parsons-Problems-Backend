@@ -1,9 +1,8 @@
 const ParsonProblem = require('../models/parsonProblem');
 const User = require('../models/user');
 const geminiInterface = require('../Interfaces/geminiInterface');
-const handleTempFile = require('../Interfaces/pythonInterface');
-const { login } = require('./authController');
-const { joinCodeLines } = require('../helpers/helpers')
+const pythonInterface = require('../Interfaces/pythonInterface');
+const { joinCodeLines } = require('../helpers/helpers');
 
 exports.createParsonProblem = async (req, res) => {
     try {
@@ -15,7 +14,7 @@ exports.createParsonProblem = async (req, res) => {
         let newProblem = null; // Declare newProblem once
 
         // Check if the user is logged in
-        if (login) {
+        if (req.login) {
             // Create problem with reference to the logged-in user
             newProblem = new ParsonProblem({
                 userOwner: req.sub, // Assuming req.sub contains the user ID
@@ -77,7 +76,7 @@ exports.submitSolution = async (req, res) => {
         }
 
 
-        const result = await handleTempFile(joinCodeLines(codeBlocks));
+        const result = await pythonInterface(joinCodeLines(codeBlocks));
 
         // Correct
         if (result.passed) {
