@@ -35,8 +35,8 @@ const cleanTerminalMessage = (messages) => {
         .filter(message => message !== ''); // Remove empty messages
 };
 
-module.exports = handleTempFile = async (codeString) => {
-    // const command = 'flake8 temp_code.py';
+module.exports = pythonInterface = async (codeString) => {
+
     let result = {};
 
     return new Promise((resolve, reject) => {
@@ -45,24 +45,24 @@ module.exports = handleTempFile = async (codeString) => {
                 return reject(err);
             }
 
-            console.log(`Temp file created at: ${path}`);
+            // console.log(`Temp file created at: ${path}`);
 
             try {
                 await writeFilePromise(path, codeString);
-                console.log('Data written to file');
+                // console.log('Data written to file');
 
                 const command = `flake8 ${path}`;
                 const { stdout } = await execPromise(`${command}`);
 
                 // If execPromise doesn't throw, test passed
-                console.log('Test Passed');
+                // console.log('Test Passed');
                 result = {
                     passed: true,
                     terminalMessage: `Passed test cases`
                 };
             } catch (error) {
                 // If an error occurs during exec, test failed
-                console.log(`Test not passed: ${error}`);
+                // console.log(`Test not passed: ${error}`);
 
                 // Process the flake8 output and remove only the file path, keeping the line and character info
                 const processedOutput = cleanTerminalMessage(error.stdout.split('\n'));
@@ -73,8 +73,8 @@ module.exports = handleTempFile = async (codeString) => {
                 };
             } finally {
                 cleanupCallback(); // Clean up the temp file
-                console.log(`At return:`);
-                console.log(result);
+                // console.log(`At return:`);
+                // console.log(result);
                 resolve(result); // Return the result
             }
         });
