@@ -4,6 +4,8 @@
 
 ### `/login` POST
 
+Returns HTTP Only Cookies
+
 Example Body:
 ```json
 {
